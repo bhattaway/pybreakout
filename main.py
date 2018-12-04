@@ -48,25 +48,44 @@ class Mycircle:
         return crect.colliderect(b.rect)
 
     def handle_collision_with_brick(self, b):
-        self.color = green
+
+        print("BEFORE:",self)
+        print("BRICK:",b)
+
+        #self.color = green
         brickleft = abs(b.rect.x - self.x)
-        brickright = abs(self.x - b.rect.x)
+        brickright = abs(self.x - b.rect.x - b.rect.w)
 
         xdiff = min(brickleft, brickright)
 
         brickup = abs(b.rect.y - self.y)
-        brickdown = abs(self.y - b.rect.y)
+        brickdown = abs(self.y - b.rect.y - b.rect.h)
         ydiff = min(brickup, brickdown)
+
+        print("\tbrickleft", brickleft)
+        print("\tbrickright", brickright)
+        print("\tbrickup", brickup)
+        print("\tbrickdown", brickdown)
 
         #
         if xdiff < ydiff:
             #bounce sideways
+            print("\thoriz bounce")
             self.dx = -self.dx
-            #if brickleft < brickright:
-                #self.x = b.xgit@github.com:bhattaway/pybreakout.git
+            if brickleft < brickright:
+                self.x = b.rect.x - self.r - 1
+            else:
+                self.x = b.rect.x + b.rect.w + self.r + 1
         else:
             #bounce vertically
+            print("\tvert bounce")
             self.dy = -self.dy
+            if brickup < brickdown:
+                self.y = b.rect.y - self.r - 1
+            else:
+                self.y = b.rect.y + b.rect.h + self.r + 1
+
+        print("AFTER:",self)
 
 class Brick:
     def __init__(self, color, x, y, w, h, alive=True):
@@ -97,15 +116,16 @@ def main():
 
     circs = []
     for i in range(10):
-        c = Mycircle(black, 
+        c = Mycircle((0,0,i*25), 
                 random.randrange(screen.get_width()), 
                 random.randrange(screen.get_height()),
-                random.randrange(1,30), 
+                random.randrange(20,30), 
                 3,
                 3
                 )
         circs.append(c)
 
+    '''
     cc = Mycircle(black, 
             350,
             175,
@@ -114,9 +134,10 @@ def main():
             0
             )
     circs.append(cc)
+    '''
 
     bricks = []
-    b = Brick(red, 100, 50, 200, 75)
+    b = Brick(red, 100, 150, 300, 200)
     bricks.append(b)
 
     while running:
@@ -139,11 +160,11 @@ def main():
 
         for b in bricks:
             b.draw(screen)
-            print(b)
+            #print(b)
 
         for c in circs:
             c.draw(screen)
-            print(c)
+            #print(c)
 
         pygame.display.flip()
 
