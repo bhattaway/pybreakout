@@ -1,0 +1,49 @@
+BEFORE: <Circle color:(0, 0, 96) x:71 y:179 r:30 dx:1 dy:1 id:48>
+BRICK: <Brick color:(255, 0, 0) rect:<rect(100, 150, 300, 200)> alive:True>
+	brickleft 29
+	brickright 329
+	brickup 29
+	brickdown 171
+	vert bounce
+AFTER: <Circle color:(0, 0, 96) x:71 y:120 r:30 dx:1 dy:-1 id:48>
+
+
+----
+
+
+BEFORE: <Circle color:(0, 0, 140) x:71 y:320 r:30 dx:1 dy:-1 id:70>
+BRICK: <Brick color:(255, 0, 0) rect:<rect(100, 150, 300, 200)> alive:True>
+	brickleft 29
+	brickright 329
+	brickup 170
+	brickdown 30
+	horiz bounce
+AFTER: <Circle color:(0, 0, 140) x:70 y:320 r:30 dx:-1 dy:-1 id:70>
+BEFORE: <Circle color:(0, 0, 142) x:71 y:321 r:30 dx:1 dy:-1 id:71>
+BRICK: <Brick color:(255, 0, 0) rect:<rect(100, 150, 300, 200)> alive:True>
+	brickleft 29
+	brickright 329
+	brickup 171
+	brickdown 29
+	vert bounce
+AFTER: <Circle color:(0, 0, 142) x:71 y:380 r:30 dx:1 dy:1 id:71>
+BEFORE: <Circle color:(0, 0, 144) x:71 y:322 r:30 dx:1 dy:-1 id:72>
+BRICK: <Brick color:(255, 0, 0) rect:<rect(100, 150, 300, 200)> alive:True>
+	brickleft 29
+	brickright 329
+	brickup 172
+	brickdown 999
+	horiz bounce
+AFTER: <Circle color:(0, 0, 144) x:70 y:322 r:30 dx:-1 dy:-1 id:72>
+
+---
+
+BEFORE: <Circle color:(0, 0, 160) x:370 y:127 r:27 dx:-3 dy:5 id:8>
+BRICK: <Brick color:(255, 0, 0) rect:<rect(100, 150, 300, 200)> alive:True>
+	brickleft 270
+	brickright 30
+	brickup 999
+	brickdown 223
+	horiz bounce
+AFTER: <Circle color:(0, 0, 160) x:427 y:127 r:27 dx:3 dy:5 id:8>
+

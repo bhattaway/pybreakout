@@ -1,4 +1,5 @@
 # pybreakout
 School project: breakout clone in Python
 
-test insert
+proper circular collision detection
+    sprite? mask?ZZ
