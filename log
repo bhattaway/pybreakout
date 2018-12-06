@@ -47,3 +47,34 @@ BRICK: <Brick color:(255, 0, 0) rect:<rect(100, 150, 300, 200)> alive:True>
 	horiz bounce
 AFTER: <Circle color:(0, 0, 160) x:427 y:127 r:27 dx:3 dy:5 id:8>
 
+
+---
+BEFORE: <Circle color:(0, 0, 40) x:427 y:174 r:29 dx:-2 dy:5 id:2>
+BRICK: <Brick color:(255, 0, 0) rect:<rect(100, 150, 300, 200)> alive:True>
+	brickleft 327
+	brickright 27
+	brickup 24
+	brickdown 176
+	vert bounce
+AFTER: <Circle color:(0, 0, 40) x:427 y:121 r:29 dx:-2 dy:-5 id:2>
+
+---
+
+BEFORE: <Circle color:(0, 0, 160) x:74 y:319 r:29 dx:5 dy:-2 id:8>
+BRICK: <Brick color:(255, 0, 0) rect:<rect(100, 150, 300, 200)> alive:True>
+	brickleft 31
+	brickright 331
+	brickup 171
+	brickdown 29
+	vert bounce
+AFTER: <Circle color:(0, 0, 160) x:74 y:379 r:29 dx:5 dy:2 id:8>
+
+BEFORE: <Circle color:(0, 0, 255) x:644 y:576 r:6 dx:-5 dy:3 id:0 alive:True>
+BRICK: <Mypaddle color:(0, 255, 0) rect:<rect(605, 580, 50, 5)> alive:True>
+	brickleft 44
+	brickright 6
+	brickup 7
+	brickdown 12
+	horiz bounce
+AFTER: <Circle color:(0, 0, 255) x:661 y:576 r:6 dx:5 dy:3 id:0 alive:True>
+
