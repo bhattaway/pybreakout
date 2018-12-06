@@ -169,18 +169,19 @@ class Mycircle:
         b.die()
 
 class Brick:
-    def __init__(self, color, x, y, w, h, alive=True):
+    def __init__(self, color, x, y, w, h, alive=True, points=10):
         self.color = color
         self.rect = pygame.Rect(x, y, w, h)
         self.alive = alive
+        self.points = points
 
     def draw(self, surface):
         if self.alive:
             pygame.draw.rect(surface, self.color, self.rect)
 
     def __str__(self):
-        return "<Brick color:%s rect:%s alive:%s>" % \
-                    (self.color, self.rect, self.alive)
+        return "<Brick color:%s rect:%s alive:%s points:%s>" % \
+                    (self.color, self.rect, self.alive, self.points)
 
 
     def die(self):
@@ -254,12 +255,24 @@ class Mypaddle:
         c.dx = (c.x - midpaddle) // size_of_increments
 
 class Game:
-    def __init__(self, level_number, num_bricks, brick_list, num_balls, ball_list):
+    def __init__(self, level_number, lives,
+            state,
+            score,
+            num_bricks, brick_list, 
+            num_balls, ball_list,
+            num_paddles, paddle_list,
+            ):
+
         self.level_number = level_number
+        self.lives = lives
+        self.state = state
+        self.score = score
         self.num_bricks = num_bricks
         self.brick_list = brick_list
         self.num_balls = num_balls
         self.ball_list = ball_list
+        self.num_paddles = num_paddles
+        self.paddle_list = paddle_list
 
     def add_brick(self, brick):
         self.brick_list.append(brick)
@@ -284,6 +297,19 @@ class Game:
                 new_num_balls += 1
         self.num_balls = new_num_balls
 
+    def add_paddle(self, paddle):
+        self.paddle_list.append(paddle)
+        self.update_num_paddles()
+
+    def update_num_paddles(self):
+        new_num_paddles = 0
+        for paddle in self.paddle_list:
+            if paddle.alive:
+                new_num_paddles += 1
+        self.num_paddles = new_num_paddles
+
+def midpoint(x, w):
+    return x + (w // 2)
 
 
 def main():
@@ -291,15 +317,15 @@ def main():
     pygame.init()
     #logo = pygame.image.load("WoodenBox.png")
     #pygame.display.set_icon(logo)
-    pygame.display.set_caption("test minimal program")
+    pygame.display.set_caption("PyBreakout!")
 
-    screen = pygame.display.set_mode((700,800))
+    screen = pygame.display.set_mode((800,600))
 
     clk = pygame.time.Clock()
     running = True
 
-    circs = []
     '''
+    circs = []
     for i in range(100):
         c = Mycircle((0,0,i*2), 
                 445,
@@ -350,11 +376,21 @@ def main():
 
 
     ### MAKING A LEVEL
+    START_SCREEN_STATE = 0
+    GAME_STATE = 1
+    RESET_BALL_STATE = 2
+    GAME_OVER_STATE = 3
+
     game = Game(level_number=1,
+                lives=3,
+                score=0,
+                state=START_SCREEN_STATE,
                 num_bricks=0,
                 brick_list=[],
                 num_balls=0,
                 ball_list=[],
+                num_paddles=0,
+                paddle_list=[],
                 )
 
 
@@ -369,88 +405,193 @@ def main():
     ### PADDLE
     # get control scheme (keys or mouse)
     #display some text TODO
-    p = Mypaddle(color=green,
-            x=screen.get_width() / 2,
-            y=screen.get_height() - 20,
-            w=100,
-            h=5,
-            dx=10,
-            dy=5)
 
 
     pygame.mouse.set_visible(False)
     pygame.event.set_grab(True)
 
+    smallfont = pygame.font.SysFont("monospace", 24)
+    medfont = pygame.font.SysFont("monospace", 32)
+    bigfont = pygame.font.SysFont("monospace", 48)
+
+    color_changer = 0
+
+    rchange = random.randrange(256)
+    dred = random.randrange(1,9)
+    gchange = random.randrange(256)
+    dgreen = random.randrange(1,9)
+    bchange = random.randrange(256)
+    dblue = random.randrange(1,9)
+
     while running:
-        #print stuff
-        #move
+        if game.state == START_SCREEN_STATE:
+            welcometext = bigfont.render("Welcome to PyBreakout!", 1, (bchange, rchange, gchange))
+            instructions = medfont.render("The paddle follows your mouse!", 1, (255,255,255))
+            moreinstructions = smallfont.render("Goal: Break all the bricks.", 1, (255,255,255))
+            escinstructions = smallfont.render("Press escape at any time to quit.", 1, (200,200,200))
+            clicktext = bigfont.render("Click to start!", 1, (rchange,gchange,bchange))
+            screen.fill((50,50,50))
+            screen.blit(welcometext, (screen.get_width() // 2 - welcometext.get_width() // 2, 100))
+            screen.blit(instructions, (screen.get_width() // 2 - instructions.get_width() // 2, 200))
+            screen.blit(moreinstructions, (screen.get_width() // 2 - moreinstructions.get_width() // 2, 300))
+            screen.blit(escinstructions, (screen.get_width() // 2 - escinstructions.get_width() // 2, 400))
+            screen.blit(clicktext, (screen.get_width() // 2 - clicktext.get_width() // 2, 500))
+            pygame.display.flip()
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    game.state = GAME_STATE
 
-        for c in game.ball_list:
-            c.move(screen)
+            rchange += dred
+            gchange += dgreen
+            bchange += dblue
 
-        p.move(screen)
+            if rchange > 255:
+                rchange = 255
+                dred = random.randrange(-9,-3)
+            elif rchange < 50:
+                rchange = 50
+                dred = random.randrange(3,9)
+            if gchange > 255:
+                gchange = 255
+                dgreen = random.randrange(-9,-3)
+            elif gchange < 50:
+                gchange = 50
+                dgreen = random.randrange(3,9)
+            if bchange > 255:
+                bchange = 255
+                dblue = random.randrange(-9,-3)
+            elif bchange < 50:
+                bchange = 50
+                dblue = random.randrange(3,9)
 
-        #check collision
-        for c in game.ball_list:
+
+        elif game.state == GAME_STATE:
+
+            #print stuff
+            #move
+
+            for c in game.ball_list:
+                c.move(screen)
+
+            for p in game.paddle_list:
+                p.move(screen)
+
+
+            #check collision
+            for c in game.ball_list:
+                for b in game.brick_list:
+                    if c.check_collision_with_brick(b):
+                        c.handle_collision_with_brick(b)
+                        game.score += b.points
+
+                for p in game.paddle_list:
+                    if c.check_collision_with_brick(p):
+                        p.handle_collision_with_ball(c)
+
+            game.update_num_bricks()
+            game.update_num_balls()
+            game.update_num_paddles()
+
+            #if no paddle
+            if game.num_paddles < 1:
+                #load paddle
+                p = Mypaddle(color=(230,102,102),
+                        x=screen.get_width() / 2,
+                        y=screen.get_height() - 55,
+                        w=100,
+                        h=5,
+                        dx=10,
+                        dy=5)
+                game.add_paddle(p)
+
+            #if no ball
+            if game.num_balls < 1:
+                #load ball
+                ball = Mycircle(
+                        color=(237,189,95),
+                        x=int(screen.get_width() / 2),
+                        y=screen.get_height() - 100,
+                        r=6,
+                        dx=5,
+                        dy=-7
+                        )
+
+                game.add_ball(ball)
+                game.lives -= 1
+                if game.lives < 0:
+                    game.state = GAME_OVER_STATE
+
+
+
+            #if no bricks
+            if game.num_bricks < 1:
+                #load level
+                for i in range(6):
+                    for j in range(8):
+                        b = Brick(
+                                color=(129,162,225),
+                                x=0 + 100*j,
+                                y=100 + 41*i,
+                                w=99,
+                                h=40,
+                                points=10,
+                                )
+                        game.add_brick(b)
+
+
+
+            livestext = smallfont.render("Lives: %s" % (game.lives), 1, (255,255,0))
+            scoretext = smallfont.render("Score: %s" % (game.score), 1, (255,255,0))
+            screen.fill((50,50,50))
+            screen.blit(livestext, (10, screen.get_height() - livestext.get_height() - 7))
+            screen.blit(scoretext, (screen.get_width() - scoretext.get_width() - 10, \
+                                screen.get_height() - scoretext.get_height() - 7))
+            #draw
+            screen.lock()
+
+
             for b in game.brick_list:
-                if c.check_collision_with_brick(b):
-                    c.handle_collision_with_brick(b)
+                b.draw(screen)
+                #print(b)
 
-            if c.check_collision_with_brick(p):
-                p.handle_collision_with_ball(c)
+            for c in game.ball_list:
+                c.draw(screen)
+                #print(c)
 
-        game.update_num_bricks()
-        game.update_num_balls()
+            for p in game.paddle_list:
+                p.draw(screen)
 
-        #if no ball
-        if game.num_balls < 1:
-            #load ball
-            ball = Mycircle(blue,
-                    x=int(screen.get_width() / 2),
-                    y=screen.get_height() - 100,
-                    r=6,
-                    dx=5,
-                    dy=-10
-                    )
+            pygame.display.flip()
 
-            game.add_ball(ball)
+            screen.unlock()
 
+        elif game.state == GAME_OVER_STATE:
+            #game over!
+            #score:
+            #click to start a new game
+            #press esc to quit
+            gameovertext = bigfont.render("GAME OVER!", 1, (rchange,26,26))
+            scoretext = bigfont.render("Score: %s" % (game.score), 1, (255,255,255))
+            instructions = smallfont.render("Click to play again!", 1, (255,255,255))
+            escinstructions = smallfont.render("Press escape to quit.", 1, (255,255,255))
+            screen.fill((50,50,50))
+            screen.blit(gameovertext, (100,100))
+            screen.blit(scoretext, (100,200))
+            screen.blit(instructions, (100,300))
+            screen.blit(escinstructions, (100,400))
+            pygame.display.flip()
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    game.state = GAME_STATE
+            pygame.display.flip()
 
+            rchange += dred
 
-        #if no bricks
-        if game.num_bricks < 1:
-            #load level
-            for i in range(4):
-                for j in range(5):
-                    b = Brick(red,
-                            30 + 101*j,
-                            20 + 31*i,
-                            100,
-                            30,
-                            )
-                    game.add_brick(b)
-
-
-
-        #draw
-        screen.lock()
-
-        screen.fill((200,0,200))
-
-        for b in game.brick_list:
-            b.draw(screen)
-            #print(b)
-
-        for c in game.ball_list:
-            c.draw(screen)
-            #print(c)
-
-        p.draw(screen)
-
-        pygame.display.flip()
-
-        screen.unlock()
-
+            if rchange > 255:
+                rchange = 255
+                dred = -2
+            elif rchange < 150:
+                dred = 2
 
 
         #quit
@@ -467,5 +608,5 @@ def main():
 
 
 if __name__ == "__main__":
-    random.seed(int(input()))
+    random.seed(3)
     main()
