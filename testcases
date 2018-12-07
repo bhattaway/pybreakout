@@ -1,0 +1,51 @@
+    '''
+    circs = []
+    for i in range(100):
+        c = Mycircle((0,0,i*2), 
+                445,
+                325+i,
+                30,
+                -1,
+                -1,
+                id=i
+                )
+        circs.append(c)
+    '''
+    '''
+    for i in range(10):
+        c = Mycircle((0,0,i*20),
+                random.randrange(screen.get_width()),
+                random.randrange(screen.get_height()),
+                #random.randrange(20,30),
+                5,
+                random.randrange(1,6),
+                random.randrange(1,6),
+                id=i
+                )
+        #if i == 2:
+        circs.append(c)
+    '''
+
+    '''
+    #use rand seed 12 (probably doesnt matter tho) with test brick
+    cc = Mycircle(black, 
+            54,
+            327,
+            29,
+            5,
+            -2
+            )
+    circs.append(cc)
+    '''
+
+
+
+    bricks = []
+    '''
+    #test brick
+    b = Brick(red, 100, 150, 300, 200)
+    bricks.append(b)
+    '''
+
+
+
