@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 
 class Mycircle:
     def __init__(self, color, x, y, r, dx, dy, id=0, alive=True):
@@ -390,6 +391,7 @@ def main():
     bigfont = pygame.font.SysFont("monospace", 48)
 
     color_changer = 0
+    dcolor = 1
 
     rchange = random.randrange(256)
     dred = random.randrange(1,9)
@@ -406,8 +408,8 @@ def main():
             escinstructions = smallfont.render("Press escape at any time to quit.", 1, (200,200,200))
             clicktext = bigfont.render("Click to start!", 1, (rchange,gchange,bchange))
             screen.fill((50,50,50))
-            screen.blit(welcometext, (screen.get_width() // 2 - welcometext.get_width() // 2, 100))
-            screen.blit(instructions, (screen.get_width() // 2 - instructions.get_width() // 2, 200))
+            screen.blit(welcometext, (screen.get_width() // 2 - welcometext.get_width() // 2, 50))
+            screen.blit(instructions, (screen.get_width() // 2 - instructions.get_width() // 2, 185))
             screen.blit(moreinstructions, (screen.get_width() // 2 - moreinstructions.get_width() // 2, 300))
             screen.blit(escinstructions, (screen.get_width() // 2 - escinstructions.get_width() // 2, 400))
             screen.blit(clicktext, (screen.get_width() // 2 - clicktext.get_width() // 2, 500))
@@ -440,6 +442,12 @@ def main():
                 dblue = random.randrange(3,9)
 
         elif game.state == INIT_LEVEL_STATE:
+            screen.fill((50,50,50))
+            levelalert = bigfont.render("LEVEL %s" % (game.level_number), 1, (255, 255, 255))
+            screen.blit(levelalert, (screen.get_width() // 2 - levelalert.get_width() // 2, \
+                                        screen.get_height() // 2 - levelalert.get_height() // 2))
+            pygame.display.flip()
+            time.sleep(1.5)
             #if no paddle
             if game.num_paddles < 1:
                 #load paddle
@@ -454,8 +462,8 @@ def main():
 
             game.clear_bricks()
             #load bricks
-            for i in range(1):
-                for j in range(2):
+            for i in range(5):
+                for j in range(8):
                     b = Brick(
                             color=(129,162,225),
                             x=0 + 100*j,
@@ -464,6 +472,10 @@ def main():
                             h=40,
                             points=10,
                             )
+                    if random.randrange(10) == 0:
+                        b.color = (204,102,102)
+                        b.points=100
+
                     game.add_brick(b)
 
             game.state = RESET_BALL_STATE
@@ -499,13 +511,29 @@ def main():
                     ball.x = p.rect.x + p.rect.w // 2
                     ball.y = p.rect.y - ball.r - 1
 
+            launchinstructions = smallfont.render("Click to launch the ball!", 1, \
+                                (155+color_changer,155+color_changer,155+color_changer))
         
-            livestext = smallfont.render("Lives: %s" % (game.lives), 1, (255,255,0))
-            scoretext = smallfont.render("Score: %s" % (game.score), 1, (255,255,0))
+            livestext = smallfont.render("Lives: %s" % (game.lives), 1, (138,190,183))
+            leveltext = smallfont.render("Level: %s" % (game.level_number), 1, (181,183,104))
+            scoretext = smallfont.render("Score: %s" % (game.score), 1, (223,142,86))
             screen.fill((50,50,50))
+            screen.blit(launchinstructions, (screen.get_width() // 2 - launchinstructions.get_width() // 2, \
+                            screen.get_height() - 110))
             screen.blit(livestext, (10, screen.get_height() - livestext.get_height() - 7))
+            screen.blit(leveltext, (screen.get_width() // 2 - leveltext.get_width() // 2, \
+                                screen.get_height() - leveltext.get_height() - 7))
             screen.blit(scoretext, (screen.get_width() - scoretext.get_width() - 10, \
                                 screen.get_height() - scoretext.get_height() - 7))
+
+            color_changer += dcolor
+
+            if color_changer > 100:
+                color_changer = 100
+                dcolor = -2
+            elif color_changer < 0:
+                dcolor = 2
+
             #draw
             screen.lock()
 
@@ -568,10 +596,13 @@ def main():
             game.update_num_paddles()
 
 
-            livestext = smallfont.render("Lives: %s" % (game.lives), 1, (255,255,0))
-            scoretext = smallfont.render("Score: %s" % (game.score), 1, (255,255,0))
+            livestext = smallfont.render("Lives: %s" % (game.lives), 1, (138,190,183))
+            leveltext = smallfont.render("Level: %s" % (game.level_number), 1, (181,183,104))
+            scoretext = smallfont.render("Score: %s" % (game.score), 1, (223,142,86))
             screen.fill((50,50,50))
             screen.blit(livestext, (10, screen.get_height() - livestext.get_height() - 7))
+            screen.blit(leveltext, (screen.get_width() // 2 - leveltext.get_width() // 2, \
+                                screen.get_height() - leveltext.get_height() - 7))
             screen.blit(scoretext, (screen.get_width() - scoretext.get_width() - 10, \
                                 screen.get_height() - scoretext.get_height() - 7))
             #draw
@@ -600,18 +631,21 @@ def main():
             #press esc to quit
             gameovertext = bigfont.render("GAME OVER!", 1, (rchange,26,26))
             scoretext = bigfont.render("Score: %s" % (game.score), 1, (255,255,255))
+            leveltext = medfont.render("Level: %s" % (game.level_number), 1, (255,255,255))
             instructions = smallfont.render("Click to play again!", 1, (255,255,255))
             escinstructions = smallfont.render("Press escape to quit.", 1, (255,255,255))
             screen.fill((50,50,50))
-            screen.blit(gameovertext, (100,100))
-            screen.blit(scoretext, (100,200))
-            screen.blit(instructions, (100,300))
-            screen.blit(escinstructions, (100,400))
+            screen.blit(gameovertext, (screen.get_width() // 2 - gameovertext.get_width() // 2, 100))
+            screen.blit(scoretext, (screen.get_width() // 2 - scoretext.get_width() // 2, 200))
+            screen.blit(leveltext, (screen.get_width() // 2 - leveltext.get_width() // 2, 300))
+            screen.blit(instructions, (screen.get_width() // 2 - instructions.get_width() // 2, 400))
+            screen.blit(escinstructions, (screen.get_width() // 2 - escinstructions.get_width() // 2, 500))
             pygame.display.flip()
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     game.lives = 2
                     game.score = 0
+                    game.level_number = 1
                     game.state = INIT_LEVEL_STATE
             pygame.display.flip()
 
