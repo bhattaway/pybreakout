@@ -2,9 +2,12 @@ import pygame
 import random
 import time
 
+# the class that 'oversees' and 'manages' all the other small stuff
+# all the methods do exactly what they say on the tin
+# should probably move more code into here
 class Game:
     def __init__(self, level_number, lives,
-            state,
+            state, #used to differentiate between start screen, gameplay, game over screen, etc.
             score,
             num_bricks, brick_list, 
             num_balls, ball_list,

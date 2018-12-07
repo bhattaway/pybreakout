@@ -2,6 +2,11 @@ import pygame
 import random
 import time
 
+# the class of the ball/puck
+
+#beware, messy hacky code and strange algebra equations lie in wait.
+#this needs to be cleaned up and simplified.
+
 class Mycircle:
     def __init__(self, color, x, y, r, dx, dy, id=0, alive=True):
         self.color = color
@@ -13,11 +18,13 @@ class Mycircle:
         self.alive = alive
         self.id = id
 
+    # moves the ball
     def move(self, surface):
         if self.alive:
             self.x += self.dx
             self.y += self.dy
 
+            # bounce off left/right/top of screen
             if self.x - self.r < 0:
                 self.x = self.r
                 self.dx = -self.dx
@@ -27,6 +34,7 @@ class Mycircle:
             if self.y - self.r < 0:
                 self.y = self.r
                 self.dy = -self.dy
+
             '''
             #bounce off bottom of screen
             if self.y + self.r > surface.get_height():
@@ -48,6 +56,8 @@ class Mycircle:
 
     def check_collision_with_brick(self, b):
         if self.alive and b.alive:
+            #collision check assumes the ball is actually a square.
+            #to be changed eventually
             crect = pygame.Rect(self.x - self.r,
                                 self.y - self.r,
                                 self.r * 2,
@@ -57,42 +67,50 @@ class Mycircle:
         else:
             return False
 
+    
+    # the most disgusting, messy function i've probably ever written. needs major refactoring.
+    # read at your own risk
+
+    #this code basically determines which side of the brick the ball ran into, and how to bounce back.
     def handle_collision_with_brick(self, b):
 
-        print("BEFORE:",self)
-        print("BRICK:",b)
+        #print("BEFORE:",self)
+        #print("BRICK:",b)
 
-        #self.color = green
+
+        #find distance to left/right side of brick
         brickleft = abs(b.rect.x - self.x + self.dx)
         if brickleft < self.r:
-            print("\t\tCHANGING BRICKLEFT FROM",brickleft)
+            #print("\t\tCHANGING BRICKLEFT FROM",brickleft)
             brickleft = 999
         brickright = abs(self.x - b.rect.x - b.rect.w - self.dx)
         if brickright < self.r:
-            print("\t\tCHANGING BRICKRIGHT FROM",brickright)
+            #print("\t\tCHANGING BRICKRIGHT FROM",brickright)
             brickright = 999
 
         xdiff = min(brickleft, brickright)
 
+        #find distance  to top/bottom of brick
         brickup = abs(b.rect.y - self.y + self.dy)
         if brickup < self.r:
-            print("\t\tCHANGING BRICKUP FROM",brickup)
+            #print("\t\tCHANGING BRICKUP FROM",brickup)
             brickup = 999
         brickdown = abs(self.y - b.rect.y - b.rect.h - self.dy)
         if brickdown < self.r:
-            print("\t\tCHANGING BRICKDOWN FROM",brickdown)
+            #print("\t\tCHANGING BRICKDOWN FROM",brickdown)
             brickdown = 999
         ydiff = min(brickup, brickdown)
 
+        '''
         print("\tbrickleft", brickleft)
         print("\tbrickright", brickright)
         print("\tbrickup", brickup)
         print("\tbrickdown", brickdown)
+        '''
 
-        #
         if xdiff < ydiff:
             #bounce sideways
-            print("\thoriz bounce")
+            #print("\thoriz bounce")
             self.dx = -self.dx
             if brickleft < brickright:
                 self.x = b.rect.x - self.r 
@@ -100,14 +118,15 @@ class Mycircle:
                 self.x = b.rect.x + b.rect.w + self.r 
         elif xdiff > ydiff:
             #bounce vertically
-            print("\tvert bounce")
+            #print("\tvert bounce")
             self.dy = -self.dy
             if brickup < brickdown:
                 self.y = b.rect.y - self.r 
             else:
                 self.y = b.rect.y + b.rect.h + self.r 
         else:
-            print("THEY ARE EQUAL WTF DO I DO")
+            #stupidly messy and overcomplicated code
+            #print("THEY ARE EQUAL WTF DO I DO")
             test = []
             test.append(abs(b.rect.x - self.r - self.x))
             test.append(abs(self.x - b.rect.x - b.rect.w - self.r))
@@ -137,6 +156,8 @@ class Mycircle:
 
             #input()
 
-        print("AFTER:",self)
+        #print("AFTER:",self)
+
+        #kill the brick
         b.die()
 
